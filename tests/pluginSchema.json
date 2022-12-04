@@ -1,0 +1,95 @@
+{
+  "fields": [
+    {
+      "id": {
+        "type": "string",
+        "auto": true,
+        "uuid": true
+      }
+    },
+    {
+      "name": {
+        "required": true,
+        "type": "string"
+      }
+    },
+    {
+      "created_at": {
+        "timestamp": true,
+        "type": "integer",
+        "auto": true
+      }
+    },
+    {
+      "route": {
+        "default": null,
+        "on_delete": "cascade",
+        "type": "foreign",
+        "reference": "routes"
+      }
+    },
+    {
+      "service": {
+        "default": null,
+        "on_delete": "cascade",
+        "type": "foreign",
+        "reference": "services"
+      }
+    },
+    {
+      "consumer": {
+        "default": null,
+        "on_delete": "cascade",
+        "type": "foreign",
+        "reference": "consumers"
+      }
+    },
+    {
+      "config": {
+        "abstract": true,
+        "type": "record"
+      }
+    },
+    {
+      "protocols": {
+        "required": true,
+        "type": "set",
+        "elements": {
+          "one_of": [
+            "grpc",
+            "grpcs",
+            "http",
+            "https",
+            "tcp",
+            "tls",
+            "tls_passthrough",
+            "udp"
+          ],
+          "type": "string"
+        },
+        "default": [
+          "grpc",
+          "grpcs",
+          "http",
+          "https"
+        ]
+      }
+    },
+    {
+      "enabled": {
+        "required": true,
+        "type": "boolean",
+        "default": true
+      }
+    },
+    {
+      "tags": {
+        "elements": {
+          "required": true,
+          "type": "string"
+        },
+        "type": "set"
+      }
+    }
+  ]
+}

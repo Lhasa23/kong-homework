@@ -1,0 +1,289 @@
+{
+  "fields": [
+    {
+      "name": {
+        "len_min": 1,
+        "type": "string",
+        "indexed": true,
+        "unique": true
+      }
+    },
+    {
+      "protocols": {
+        "elements": {
+          "required": true,
+          "type": "string",
+          "one_of": [
+            "grpc",
+            "grpcs",
+            "http",
+            "https",
+            "tcp",
+            "tls",
+            "tls_passthrough",
+            "udp",
+            "ws",
+            "wss"
+          ],
+          "len_min": 1
+        },
+        "type": "set",
+        "default": [
+          "http",
+          "https"
+        ],
+        "len_min": 1,
+        "indexed": true,
+        "mutually_exclusive_subsets": [
+          [
+            "http",
+            "https"
+          ],
+          [
+            "tcp",
+            "tls",
+            "udp"
+          ],
+          [
+            "tls_passthrough"
+          ],
+          [
+            "grpc",
+            "grpcs"
+          ],
+          [
+            "ws",
+            "wss"
+          ]
+        ],
+        "required": true
+      }
+    },
+    {
+      "methods": {
+        "elements": {
+          "required": true,
+          "type": "string",
+          "match": "^%u+$",
+          "len_min": 1
+        },
+        "type": "set",
+        "indexed": true
+      }
+    },
+    {
+      "hosts": {
+        "elements": {
+          "type": "string",
+          "match_any": {
+            "patterns": [
+              "^%*%.",
+              "%.%*$",
+              "^[^*]*$"
+            ],
+            "err": "invalid wildcard: must be placed at leftmost or rightmost label"
+          },
+          "required": true,
+          "match_all": [
+            {
+              "err": "invalid wildcard: must have at most one wildcard",
+              "pattern": "^[^*]*%*?[^*]*$"
+            }
+          ],
+          "len_min": 1
+        },
+        "type": "array",
+        "indexed": true
+      }
+    },
+    {
+      "paths": {
+        "elements": {
+          "type": "string",
+          "match_none": [
+            {
+              "err": "must not have empty segments",
+              "pattern": "//"
+            }
+          ],
+          "match_any": {
+            "patterns": [
+              "^/",
+              "^~/"
+            ],
+            "err": "should start with: / (fixed path) or ~/ (regex path)"
+          }
+        },
+        "type": "array",
+        "indexed": true
+      }
+    },
+    {
+      "headers": {
+        "keys": {
+          "match_none": [
+            {
+              "err": "cannot contain 'host' header, which must be specified in the 'hosts' attribute",
+              "pattern": "^[Hh][Oo][Ss][Tt]$"
+            }
+          ],
+          "type": "string"
+        },
+        "type": "map",
+        "values": {
+          "elements": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      }
+    },
+    {
+      "https_redirect_status_code": {
+        "required": true,
+        "one_of": [
+          426,
+          301,
+          302,
+          307,
+          308
+        ],
+        "default": 426,
+        "type": "integer"
+      }
+    },
+    {
+      "regex_priority": {
+        "default": 0,
+        "type": "integer"
+      }
+    },
+    {
+      "strip_path": {
+        "required": true,
+        "type": "boolean",
+        "default": true
+      }
+    },
+    {
+      "path_handling": {
+        "len_min": 1,
+        "type": "string",
+        "default": "v0",
+        "one_of": [
+          "v0",
+          "v1"
+        ]
+      }
+    },
+    {
+      "preserve_host": {
+        "required": true,
+        "type": "boolean",
+        "default": false
+      }
+    },
+    {
+      "request_buffering": {
+        "required": true,
+        "type": "boolean",
+        "default": true
+      }
+    },
+    {
+      "response_buffering": {
+        "required": true,
+        "type": "boolean",
+        "default": true
+      }
+    },
+    {
+      "snis": {
+        "elements": {
+          "type": "string"
+        },
+        "type": "set"
+      }
+    },
+    {
+      "sources": {
+        "elements": {
+          "type": "record",
+          "fields": [
+            {
+              "ip": {
+                "type": "string"
+              }
+            },
+            {
+              "port": {
+                "between": [
+                  0,
+                  65535
+                ],
+                "type": "integer"
+              }
+            }
+          ],
+          "entity_checks": [
+            {
+              "at_least_one_of": [
+                "ip",
+                "port"
+              ]
+            }
+          ]
+        },
+        "type": "set"
+      }
+    },
+    {
+      "destinations": {
+        "elements": {
+          "type": "record",
+          "fields": [
+            {
+              "ip": {
+                "type": "string"
+              }
+            },
+            {
+              "port": {
+                "between": [
+                  0,
+                  65535
+                ],
+                "type": "integer"
+              }
+            }
+          ],
+          "entity_checks": [
+            {
+              "at_least_one_of": [
+                "ip",
+                "port"
+              ]
+            }
+          ]
+        },
+        "type": "set"
+      }
+    },
+    {
+      "tags": {
+        "elements": {
+          "required": true,
+          "type": "string",
+          "len_min": 1
+        },
+        "type": "set"
+      }
+    },
+    {
+      "service": {
+        "type": "foreign",
+        "reference": "services"
+      }
+    }
+  ]
+}
