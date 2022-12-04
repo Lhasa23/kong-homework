@@ -4,7 +4,6 @@
     <el-button class="fetch-schema routes" @click="fetchSchemas('routes')">Routes</el-button>
     <el-button class="fetch-schema routes" @click="fetchSchemas('consumers')">Consumers</el-button>
     <el-button class="fetch-schema routes" @click="fetchSchemas('plugins')">Plugins</el-button>
-    <el-button @click="test">test</el-button>
   </section>
 
   <el-form label-position="top" :rules="rules">
@@ -49,10 +48,6 @@ watch(fieldsItems, (newValue) => {
 })
 
 const rules = reactive<FormRules>(fieldItemsValidation.value)
-
-const test = () => {
-  console.log(fieldsItems.value)
-}
 </script>
 
 <style scoped>

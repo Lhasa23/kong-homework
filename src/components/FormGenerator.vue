@@ -47,7 +47,12 @@
           </section>
         </template>
         <section class="header-generator">
-          <el-input class="map-key" placeholder="Please input header key" v-model="mapItem.key" />
+          <el-input
+            class="map-key"
+            placeholder="Please input header key"
+            v-model="mapItem.key"
+            @input="validateKey($event)"
+          />
           <el-button class="add-header" @click="addMapItem">Add a Header</el-button>
         </section>
       </template>
@@ -57,6 +62,7 @@
 
 <script setup lang="ts">
 import { computed, Ref, ref, watch } from 'vue'
+import { ElMessage } from 'element-plus'
 import { formatFields } from '../utils/formatFields'
 
 const { field, value } = defineProps<{
@@ -90,6 +96,20 @@ const mapItem = ref({ key: '', value: '' })
 const addMapItem = () => {
   itemValue.value.push(JSON.parse(JSON.stringify(mapItem.value)))
   mapItem.value = { key: '', value: '' }
+}
+let timer: any = undefined
+const validateKey = (value: string) => {
+  const reg = new RegExp(field.keys.match_none[0].pattern)
+  if (timer) {
+    clearTimeout(timer)
+    timer = undefined
+  }
+  timer = setTimeout(() => {
+    if (reg.test(value)) ElMessage({
+      message: field.keys.match_none[0].err,
+      type: 'warning'
+    })
+  }, 500)
 }
 
 const formType = computed(() => {
@@ -131,6 +151,9 @@ const hidden = computed(() => field.auto || hiddenType.includes(field.type))
 
 <style lang="scss">
 .el-form-item {
+  margin-bottom: 24px;
+  position: relative;
+
   .el-form-item__label {
     font-size: 24px;
     font-weight: 600;
@@ -138,7 +161,7 @@ const hidden = computed(() => field.auto || hiddenType.includes(field.type))
 
   .el-checkbox {
     * {
-      font-size: 16px;
+      font-size: 24px;
     }
 
     .el-checkbox__label {
