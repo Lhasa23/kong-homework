@@ -137,6 +137,7 @@ const formType = computed(() => {
     case 'integer':
       return 'integer'
     case 'boolean':
+      itemValue.value = Boolean(field.default)
       return 'checkbox'
     case 'map':
       itemValue.value = []

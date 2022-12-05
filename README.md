@@ -4,7 +4,7 @@ Implement Kong API interface schemas form generator.
 
 ## Problems
 
-Routes-Schemas-'Hosts' field offer some match_all and match_any patterns. But these patterns are not working normally. If the test value includes wildcard no matter how much, the regexp would test false. There are my test instances below:
+Routes-Schemas-'Hosts' field offers some match_all and match_any patterns. But these patterns are not working normally. If the test value includes wildcard no matter how much, the patterns would test false. There are my test instances below:
 
 ```js
 let a = new RegExp('^[^*]*%*?[^*]*$')

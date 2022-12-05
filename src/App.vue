@@ -1,9 +1,9 @@
 <template>
   <section class="button-group">
-    <el-button class="fetch-schema service" @click="fetchSchemas('services')">Services</el-button>
-    <el-button class="fetch-schema routes" @click="fetchSchemas('routes')">Routes</el-button>
-    <el-button class="fetch-schema routes" @click="fetchSchemas('consumers')">Consumers</el-button>
-    <el-button class="fetch-schema routes" @click="fetchSchemas('plugins')">Plugins</el-button>
+    <el-button class="fetch-schema service" @click="entity = 'services'">Services</el-button>
+    <el-button class="fetch-schema routes" @click="entity = 'routes'">Routes</el-button>
+    <el-button class="fetch-schema routes" @click="entity = 'consumers'">Consumers</el-button>
+    <el-button class="fetch-schema routes" @click="entity = 'plugins'">Plugins</el-button>
   </section>
 
   <el-form label-position="top" :rules="rules">
@@ -11,23 +11,45 @@
       <FormGenerator :field="item" v-model:value="item.value" />
     </template>
   </el-form>
+
+  <section v-show="fieldsItems.length > 0" class="footer">
+    <el-button type="primary" @click="verifyEntityInput">Verify Input</el-button>
+  </section>
 </template>
 
 <script setup lang="ts">
 import axios from 'axios'
 import { computed, ComputedRef, reactive, Ref, ref, watch } from 'vue'
 import FormGenerator from './components/FormGenerator.vue'
-import { FormRules } from 'element-plus'
+import { ElNotification, FormRules } from 'element-plus'
 import { formatFields } from './utils/formatFields'
 import { validatorGenerator } from './utils/validatorGenerator'
 
 const schemas: Ref<{ fields: { [filed_name: string]: { [key: string]: any } }[] }> = ref({ fields: [] })
 
+const entity: Ref<string> = ref('')
 const fetchSchemas = (path: string) => {
   axios.get(`http://localhost:8001/schemas/${path}`).then(res => {
     schemas.value = res.data
   }).catch(error => {
     console.error(error)
+  })
+}
+watch(entity, (newValue) => {
+  fetchSchemas(entity.value)
+})
+const verifyEntityInput = () => {
+  const data = fieldsItems.value.map((item) => ({ [item.field_name]: item.value })).reduce((res, item) => Object.assign(res, item), {})
+  console.log(data)
+  axios.post(`http://localhost:8001/schemas/${entity.value}/validate`, data).then((res) => {
+    console.log(res)
+  }).catch((err) => {
+    ElNotification({
+      title: 'Warning',
+      message: err.response.data.message,
+      type: 'warning',
+      duration: 0
+    })
   })
 }
 
