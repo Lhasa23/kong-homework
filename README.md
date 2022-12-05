@@ -2,7 +2,7 @@
 
 Implement Kong API interface schemas form generator.
 
-## Problems
+## Issue
 
 Routes-Schemas-'Hosts' field offers some match_all and match_any patterns. But these patterns are not working normally. If the test value includes wildcard no matter how much, the patterns would test false. There are my test instances below:
 
